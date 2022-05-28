@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="reset2.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+  <title>Project: Tic Tac Toe</title>
+</head>
+
+<body>
+
+  <div class="initial-div">
+    <h1>Tic Tac Toe</h1>
+    <button type="button" class="play-button">Play!</button>
+    <button type="button" class="add-name-button">Add Names</button>
+  </div>
+
+  <div class="form-div">
+    <form action="#" class="modal-form" novalidate>
+      <p>Please enter the name of two players.</p>
+
+      <div class="input-div">
+        <label for="name1" class="label">Player 1 </label>
+        <input type="text" name="name1" id="name1" class="input" placeholder="Shrek" value="Shrek" maxlength="15">
+        <span class="error" aria-live="polite"></span>
+      </div>
+
+      <div class="input-div">
+        <label for="name2" class="label">Player 2 </label>
+        <input type="text" name="name2" id="name2" class="input" placeholder="Fiona" value="Fiona" maxlength="15">
+        <span class="error" aria-live="polite"></span>
+      </div>
+
+      <button type="button" class="submit">Accept</button>
+      <button type="button" class="cancel">Cancel</button>
+    </form>
+  </div>
+
+  <main>
+    <div class="game-box">
+      <div class="mark-box one"></div>
+      <div class="mark-box two"></div>
+      <div class="mark-box three"></div>
+      <div class="mark-box four"></div>
+      <div class="mark-box five"></div>
+      <div class="mark-box six"></div>
+      <div class="mark-box seven"></div>
+      <div class="mark-box eight"></div>
+      <div class="mark-box nine"></div>
+      <img class="background-box" src="media/tic-tac-toe.svg" alt="tic tac toe background">
+    </div>
+  </main>
+
+  <div class="gameOver-div">
+    <p class="winner-message"></p>
+    <button type="button">Play Again!</button>
+    <button type="button">Menu</button>
+  </div>
+
+  <footer>
+    <a href="https://github.com/DanTenebris">DanTenebris <img src="media/github.svg" alt="Github Logo"></a>
+  </footer>
+
+</body>
+
+</html>

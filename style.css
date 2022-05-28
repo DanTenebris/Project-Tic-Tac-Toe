@@ -1,0 +1,258 @@
+:root {
+  /* Pink */
+  --first-color: #831843;
+  --second-color: #be185d;
+  --third-color: #ec4899;
+  --fourth-color: #f9a8d4;
+  --fifth-color: #fce7f3;
+  --sixth-color: #fdf2f8;
+
+  --submit-color: #018f01;
+  --submitD-color: #006400;
+  --error-color: red;
+  --errorD-color: #cf0000;
+
+  --inputBorder-radius: 0px 50px 0px 30px;
+  --btnBorder-radius: 2px 50px;
+
+  --smallBox-width: max(250px, 99vw);
+  --smallBox-height: max(300px, 70vh);
+
+  --bigBox-width: max(250px, 80vw);
+
+  --smallMark-width: calc(var(--smallBox-width) / 3 - 10px);
+  --smallMark-height: calc(var(--smallBox-height) / 3 - 2px);
+  --bigMark-width: calc(var(--bigBox-width) / 3 - 10px);
+  ;
+}
+
+body {
+  min-height: 100vh;
+  display: grid;
+  /* grid-template-rows: var(--smallBox-height) min-content; */
+  grid-template-rows: 1fr min-content;
+  justify-items: center;
+  background-color: var(--sixth-color);
+}
+
+body * {
+  font-size: 1rem;
+}
+
+.initial-div {
+  /* change */
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 10px;
+}
+
+h1 {
+  font-size: 2rem;
+  color: var(--first-color);
+}
+
+.initial-div>button {
+  font-size: 1.5rem;
+  min-height: 3rem;
+  min-width: 100%;
+  background-color: var(--second-color);
+  color: white;
+  border-style: none;
+  border-radius: var(--btnBorder-radius);
+}
+
+.initial-div>button:hover {
+  background-color: var(--first-color);
+}
+
+.form-div {
+  /* Change */
+  display: none;
+  position: fixed;
+  padding-top: 100px;
+  padding-bottom: 100px;
+  grid-template-rows: min-content;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: #00000033;
+}
+
+.modal-form {
+  background-color: var(--sixth-color);
+  padding: 10px;
+  width: 99%;
+  display: grid;
+  justify-self: center;
+  column-gap: 20px;
+}
+
+.modal-form> :not(:first-child, :last-child) {
+  margin: 10px 0;
+}
+
+.modal-form>p {
+  grid-column: 1 / -1;
+  font-size: 1.3rem;
+  justify-self: center;
+}
+
+.input-div {
+  display: grid;
+}
+
+.input-div>label {
+  padding: 10px 2px;
+}
+
+:is(.input, .modal-form>button) {
+  min-height: 2rem;
+}
+
+.input {
+  border-radius: var(--inputBorder-radius);
+  padding: 5px;
+  border: 2px solid var(--first-color);
+}
+
+.error {
+  display: none;
+}
+
+.error.active {
+  display: block;
+  padding: 5px;
+  border-radius: 20px 0 50px 0px;
+  color: white;
+  font-weight: bold;
+  background-color: var(--errorD-color);
+}
+
+.modal-form>button {
+  border: none;
+  border-radius: var(--btnBorder-radius);
+}
+
+:is(.submit, .cancel) {
+  font-weight: bold;
+  color: white;
+}
+
+.submit {
+  background-color: var(--submit-color);
+}
+
+.submit:hover {
+  background-color: var(--submitD-color);
+}
+
+.cancel {
+  background-color: var(--error-color);
+}
+
+.cancel:hover {
+  background-color: var(--errorD-color);
+}
+
+main {
+  /* change */
+  display: none;
+  justify-items: center;
+  align-content: center;
+}
+
+.game-box {
+  width: var(--smallBox-width);
+  height: var(--smallBox-height);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+
+.mark-box {
+  display: grid;
+  align-items: center;
+  justify-items: center;
+}
+
+.background-box {
+  position: absolute;
+  z-index: -1;
+  height: var(--smallBox-height);
+  width: var(--smallBox-width);
+  /* object-position: 30% 0; */
+}
+
+.mark {
+  width: var(--smallMark-width);
+  height: var(--smallMark-height);
+}
+
+.gameOver-div {
+  display: grid;
+  gap: 5px;
+  width: var(--smallBox-width);
+}
+
+.gameOver-div > *{
+  display: none;
+}
+
+.winner-message {
+  grid-column: 1 / -1;
+  justify-self: center;
+  color: var(--first-color);
+  font-size: 1.3rem;
+}
+
+.gameOver-div > button{
+  font-weight: bold;
+  border-radius: var(--btnBorder-radius);
+  height: 2rem;
+  border: 1.5px solid var(--first-color);
+  margin: 0px 5px;
+}
+
+
+.gameOver-div > button:first-of-type{
+  color: white;
+  background-color: var(--first-color);
+}
+.gameOver-div > button:first-of-type:hover{
+  background-color: var(--third-color);
+}
+
+.gameOver-div > button:last-of-type{
+  color: var(--first-color);
+  /* grid-column: 2 / -1; */
+}
+.gameOver-div > button:last-of-type:hover{
+  background-color: var(--fourth-color);
+}
+
+
+@media (min-width: 700px) {
+  .modal-form {
+    width: 80%;
+    align-items: center;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .game-box {
+    width: var(--bigBox-width);
+  }
+
+  .background-box {
+    width: var(--bigBox-width);
+  }
+
+  .mark {
+    width: var(--bigMark-width);
+  }
+
+  .gameOver-div {
+    grid-template-columns: 1fr 1fr;
+    width: var(--bigBox-width);
+  }
+}
