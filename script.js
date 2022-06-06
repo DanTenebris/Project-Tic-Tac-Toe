@@ -12,18 +12,19 @@ const player2 = Player('Player 2');
 const gameBoard = (() => {
   const _marks = [];
 
+  for (let i = 0; i < 9; i++) {
+    _marks.push('_');
+  }
+  const getMarks = () => _marks;
+
   let _playerFlag = true;
   const _markBoxes = Array.from(document.querySelectorAll('.mark-box'));
-
-  for (let i = 0; i < 9; i++) {
-    _marks.push(null);
-  }
 
   const getPlayerFlag = () => _playerFlag;
   const setPlayerFlag = (flag) => _playerFlag = flag;
 
   const _checkIfAllTrue = (value) => {
-    return (value);
+    return (value !== '_');
   };
 
   const _removeOnClick = (array) => {
@@ -32,59 +33,57 @@ const gameBoard = (() => {
     });
   };
 
-  const removeAllMarks = () => _marks.fill(null);
+  const removeAllMarks = () => _marks.fill('_');
 
   //012 345 678
   //036 147 258
   //048 246
-  const _evaluate = () => {
+  const evaluate = (board) => {
 
-    if ((_marks[0]) &&
-      ((_marks[0] === _marks[1] && _marks[1] === _marks[2]) ||
-        (_marks[0] === _marks[3] && _marks[3] === _marks[6]) ||
-        (_marks[0] === _marks[4] && _marks[4] === _marks[8]))) {
-      if (_marks[0] === 'o') {
+    if (((board[0] === 'x') || (board[0] === 'o')) &&
+      ((board[0] === board[1] && board[1] === board[2]) ||
+        (board[0] === board[3] && board[3] === board[6]) ||
+        (board[0] === board[4] && board[4] === board[8]))) {
+      if (board[0] === 'o') {
         return -10;
-      } else {
+      } else if (board[0] === 'x') {
         return 10;
       }
     }
-    else if ((_marks[3]) &&
-      (_marks[3] === _marks[4] && _marks[4] === _marks[5])) {
-      if (_marks[3] === 'o') {
+    else if (((board[3] === 'x') || (board[3] === 'o')) &&
+      (board[3] === board[4] && board[4] === board[5])) {
+      if (board[3] === 'o') {
         return -10;
-      } else {
+      } else if (board[3] === 'x') {
         return 10;
       }
     }
-    else if ((_marks[6]) &&
-      (_marks[6] === _marks[7] && _marks[7] === _marks[8])) {
-      if (_marks[6] === 'o') {
+    else if (((board[6] === 'x') || (board[6] === 'o')) &&
+      (board[6] === board[7] && board[7] === board[8])) {
+      if (board[6] === 'o') {
         return -10;
-      } else {
+      } else if (board[6] === 'x') {
         return 10;
       }
     }
-    else if ((_marks[1]) &&
-      (_marks[1] === _marks[4] && _marks[4] === _marks[7])) {
-      if (_marks[1] === 'o') {
+    else if (((board[1] === 'x') || (board[1] === 'o')) &&
+      (board[1] === board[4] && board[4] === board[7])) {
+      if (board[1] === 'o') {
         return -10;
-      } else {
+      } else if (board[1] === 'x') {
         return 10;
       }
     }
-    else if ((_marks[2]) &&
-      ((_marks[2] === _marks[5] && _marks[5] === _marks[8]) ||
-        (_marks[2] === _marks[4] && _marks[4] === _marks[6]))) {
-      if (_marks[2] === 'o') {
+    else if (((board[2] === 'x') || (board[2] === 'o')) &&
+      ((board[2] === board[5] && board[5] === board[8]) ||
+        (board[2] === board[4] && board[4] === board[6]))) {
+      if (board[2] === 'o') {
         return -10;
-      } else {
+      } else if (board[2] === 'x') {
         return 10;
       }
-    } else if (_marks.every(_checkIfAllTrue)) {
+    } else {
       return 0;
-    }else{
-      return false;
     }
   };
 
@@ -99,19 +98,17 @@ const gameBoard = (() => {
       displayController.showWinnerMessage();
     }
 
-    console.log(getPlayerFlag() ? player1.getName() : player2.getName());
     _removeOnClick(_markBoxes);
     removeAllMarks();
   };
 
   const _checkIfFinished = () => {
-    const _evaResult = _evaluate();
+    const _evaResult = evaluate(_marks);
     if ((_evaResult === -10) || (_evaResult === 10)) {
       _finishGame();
-    } else if (_evaResult === 0) {
+    } else if ((_evaResult === 0) && (_marks.every(_checkIfAllTrue))) {
       _finishGame(false);
     }
-
   };
 
   const add = (index) => {
@@ -121,7 +118,7 @@ const gameBoard = (() => {
     _togglePlayerFlag();
   };
 
-  return { getPlayerFlag, setPlayerFlag, add, removeAllMarks };
+  return { getMarks, getPlayerFlag, setPlayerFlag, add, removeAllMarks, evaluate };
 })();
 
 
@@ -137,23 +134,114 @@ const iaController = (() => {
 
   const getIaState = () => _iaOn;
 
-  const _selectRandomElement = () => {
-    const _emptyBoxes = _markBoxes.filter(ele => !ele.hasChildNodes());
+  const _checkIfNotFilled = (board) => {
+    for (const box of board) {
+      if (box === '_') return true;
+    }
+    return false;
+  };
 
-    if (_emptyBoxes.length) {
-      const _box = _emptyBoxes[Math.floor(Math.random() * _emptyBoxes.length)];
-      return _box;
-    } else {
-      return false;
+  const _miniMax = (board, depth, isMax = true) => {
+    let score = gameBoard.evaluate(board);
+
+    // If Maximizer has won the game
+    // return his/her evaluated score
+    if (score == 10) return score;
+
+    // If Minimizer has won the game
+    // return his/her evaluated score
+    if (score == -10) return score;
+
+    // If there are no more moves and
+    // no winner then it is a tie
+    if (_checkIfNotFilled(board) === false) return 0;
+
+    // If this maximizer's move
+    if (isMax) {
+      let best = -1000;
+
+      // Traverse all cells
+      for (let i = 0; i < board.length; i++) {
+        if (board[i] === '_') {
+          board[i] = 'x';
+
+          // Call minimax recursively
+          // and choose the maximum value
+          best = Math.max(best, _miniMax(board, depth + 1, !isMax));
+
+          // Undo the move
+          board[i] = '_';
+        }
+      }
+
+      return best;
+    }
+
+    // If this minimizer's move
+    else {
+      let best = 1000;
+
+      // Traverse all cells
+      for (let i = 0; i < board.length; i++) {
+        if (board[i] === '_') {
+          board[i] = 'o';
+
+          // Call minimax recursively
+          // and choose the minimun value
+          best = Math.min(best, _miniMax(board, depth + 1, !isMax));
+
+          // Undo the move
+          board[i] = '_';
+        }
+      }
+      return best;
     }
   };
 
-  const _clickRandomBox = () => {
-    const _selectedElement = _selectRandomElement();
-    if ((_selectedElement) && (!gameBoard.getPlayerFlag())) _selectedElement.click();
+  // This will return the best possible
+  // move for the player
+  const _findBestMove = (board) => {
+    let bestVal = -1000;
+    let bestMark = false;
+
+    // Traverse all cells, evaluate
+    // minimax function for all empty
+    // cells. And return the cell
+    // with optimal value.
+    for (let i = 0; i < board.length; i++) {
+      if (board[i] === '_') {
+        board[i] = 'x';
+
+        // compute evaluation function
+        // for this move.
+        let moveVal = _miniMax(board, 0, false);
+
+        // Undo the move
+        board[i] = '_';
+
+        // If the value of the current move
+        // is more than the best value, then
+        // update best
+        if (moveVal > bestVal) {
+          bestMark = i;
+          bestVal = moveVal;
+        }
+      }
+    }
+
+    return bestMark;
   };
 
-  const _clickTimer = () => setTimeout(_clickRandomBox, 1000);
+  const _clickBestBox = () => {
+    const _board = gameBoard.getMarks().slice()
+    const _selectedMark = _findBestMove(_board);
+
+    if (!gameBoard.getPlayerFlag()) {
+      _markBoxes[_selectedMark].click();
+    }
+  };
+
+  const _clickTimer = () => setTimeout(_clickBestBox, 1000);
 
   const _clickWithPlayerFlag = () => {
     if (!gameBoard.getPlayerFlag()) _clickTimer();
@@ -264,6 +352,36 @@ const displayController = (() => {
     }
   };
 
+  const _markBoxClassToDefault = () => {
+    for (let _markBox of _markBoxes) {
+      _markBox.className = 'mark-box';
+    }
+  };
+
+  const _timerToDefaultMarkBoxClass = () => {
+    setTimeout(_markBoxClassToDefault, 5000);
+  };
+
+  const _turnMarkBoxes = () => {
+    for (let _markBox of _markBoxes) {
+      _markBox.className += ' active';
+    }
+    _timerToDefaultMarkBoxClass();
+  };
+
+  const _messageClassToDefault = () => {
+    _winnerMessage.className = 'winner-message'
+  };
+
+  const _timerToDefaultMessageClass = () => {
+    setTimeout(_messageClassToDefault, 5000);
+  };
+
+  const _scaleMessage = () => {
+    _winnerMessage.className += ' active';
+    _timerToDefaultMessageClass();
+  };
+
   const _removeMarks = () => {
     for (const _markBox of _markBoxes) {
       while (_markBox.firstChild) {
@@ -331,7 +449,6 @@ const displayController = (() => {
       _startGame();
       iaController.turnOn();
       iaController.clicking();
-      console.log('AI');
     };
   };
 
@@ -366,14 +483,14 @@ const displayController = (() => {
 
 
       for (const inputElement of _inputElements) {
-        if (!inputElement.hasAttribute('listenerOnInput')) {
+        if (inputElement.getAttribute('listenerOnInput') !== 'true') {
           inputElement.addEventListener('input', _writeError.bind(0, inputElement, inputElement.nextElementSibling));
           inputElement.setAttribute('listenerOnInput', 'true');
           break;
         }
       }
 
-      if (!_submitButton.hasAttribute('listenerOnClick')) {
+      if (_submitButton.getAttribute('listenerOnClick') !== 'true') {
         _submitButton.addEventListener('click', () => {
 
           for (const inputElement of _inputElements) {
@@ -413,14 +530,17 @@ const displayController = (() => {
       if (iaController.getIaState()) {
         iaController.clicking();
       }
+      window.scrollTo(0, 0);
     };
   };
 
   const showWinnerMessage = (playerWin = false) => {
     if (playerWin) {
-      _winnerMessage.textContent = `${playerWin} won!!`;
+      _winnerMessage.textContent = `${playerWin} won!! \\ (≧∀≦) /`;
+
+      _turnMarkBoxes();
     } else {
-      _winnerMessage.textContent = `It's a tie :O`;
+      _winnerMessage.textContent = `It's a tie w(°ｏ°)w`;
     }
     _toggleElementBlockNone(_winnerMessage);
     _toggleElementBlockNone(_playAgainButton);
@@ -430,6 +550,7 @@ const displayController = (() => {
     if (iaController.getIaState()) {
       iaController.removeMarkListener();
     }
+    _scaleMessage();
   };
 
   return { initialButtonListeners, showWinnerMessage };
